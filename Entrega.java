@@ -169,16 +169,16 @@ class Entrega {
             // // ∃!x ∀y. P(y) -> Q(x,y) ?
 
             // assertThat(
-            //         exercici2(
-            //                 new int[] { -1, 1, 2, 3, 4 },
-            //                 y -> y <= 0,
-            //                 (x, y) -> x == -y));
+            // exercici2(
+            // new int[] { -1, 1, 2, 3, 4 },
+            // y -> y <= 0,
+            // (x, y) -> x == -y));
 
             // assertThat(
-            //         !exercici2(
-            //                 new int[] { -2, -1, 1, 2, 3, 4 },
-            //                 y -> y < 0,
-            //                 (x, y) -> x * y == 1));
+            // !exercici2(
+            // new int[] { -2, -1, 1, 2, 3, 4 },
+            // y -> y < 0,
+            // (x, y) -> x * y == 1));
 
             // Exercici 3
             // ∃x,y ∀z. P(x,z) ⊕ Q(y,z) ?
@@ -206,11 +206,11 @@ class Entrega {
                     ));
 
             // assertThat(
-            //         !exercici4(
-            //                 new int[] { 0, 2, 4, 6, 8, 16 },
-            //                 x -> x % 2 == 0, // x és múltiple de 2
-            //                 x -> x % 4 == 0 // x és múltiple de 4
-            //         ));
+            // !exercici4(
+            // new int[] { 0, 2, 4, 6, 8, 16 },
+            // x -> x % 2 == 0, // x és múltiple de 2
+            // x -> x % 4 == 0 // x és múltiple de 4
+            // ));
         }
     }
 
@@ -241,29 +241,100 @@ class Entrega {
          * Podeu soposar que `a` està ordenat de menor a major.
          */
         static boolean exercici1(int[] a, int[][] rel) {
-            int count = 0;
-            for (int i = 0; i < a.length; i++) {
-                if (rel[i][0] != rel[i][1]) {
-                    count++;
+            return isReflexive(a, rel) && isSymmetric(rel) && isTransitive(rel);
+        }
+
+        static boolean isReflexive(int[] a, int[][] rel) {
+            for (int value : a) {
+                boolean found = false;
+                for (int[] pair : rel) {
+                    if (pair[0] == value && pair[1] == value) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    return false;
+            }
+            return true;
+        }
+
+        static boolean isSymmetric(int[][] rel) {
+            for (int[] pair : rel) {
+                boolean found = false;
+                for (int[] otherPair : rel) {
+                    if (pair[0] == otherPair[1] && pair[1] == otherPair[0]) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    return false;
+            }
+            return true;
+        }
+
+        static boolean isTransitive(int[][] rel) {
+            for (int[] pair : rel) {
+                for (int[] otherPair : rel) {
+                    if (pair[1] == otherPair[0]) {
+                        boolean found = false;
+                        for (int[] finalPair : rel) {
+                            if (finalPair[0] == pair[0] && finalPair[1] == otherPair[1]) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found)
+                            return false;
+                    }
                 }
             }
-
-            if (count > 0) {
-                return false;
-            }
-
             return true;
         }
 
         /*
          * Comprovau si la relació `rel` definida sobre `a` és d'equivalència. Si ho és,
-         * retornau el
-         * cardinal del conjunt quocient de `a` sobre `rel`. Si no, retornau -1.
+         * retornau el cardinal del conjunt quocient de `a` sobre `rel`. Si no, retornau
+         * -1.
          *
          * Podeu soposar que `a` està ordenat de menor a major.
          */
         static int exercici2(int[] a, int[][] rel) {
-            return 0; // TO DO
+            if (!isReflexive(a, rel) || !isSymmetric(rel) || !isTransitive(rel))
+                return -1;
+
+            // Creamos un array para representar a qué clase de equivalencia pertenece cada
+            // elemento.
+            int n = a[a.length - 1] + 1; // Asumiendo que 'a' contiene números enteros no negativos
+            int[] parent = new int[n];
+            for (int i = 0; i < n; i++) {
+                parent[i] = i; // Inicialmente, cada elemento está en su propia clase de equivalencia
+            }
+
+            // Para cada par en la relación, unimos sus clases de equivalencia.
+            for (int[] pair : rel) {
+                int root1 = find(pair[0], parent);
+                int root2 = find(pair[1], parent);
+                if (root1 != root2) {
+                    parent[root1] = root2;
+                }
+            }
+
+            // Contamos el número de clases de equivalencia únicas.
+            Set<Integer> uniqueRoots = new HashSet<>();
+            for (int element : a) {
+                uniqueRoots.add(find(element, parent));
+            }
+
+            return uniqueRoots.size();
+        }
+
+        static int find(int element, int[] parent) {
+            if (parent[element] != element) {
+                parent[element] = find(parent[element], parent);
+            }
+            return parent[element];
         }
 
         /*
@@ -272,7 +343,16 @@ class Entrega {
          * Podeu soposar que `a` i `b` estan ordenats de menor a major.
          */
         static boolean exercici3(int[] a, int[] b, int[][] rel) {
-            return false; // TO DO
+            for (int i = 0; i < a.length; i++) {
+                int count = 0;
+                for (int j = 0; j < rel.length; j++) {
+                    if (rel[j][0] == a[i])
+                        count++;
+                }
+                if (count != 1)
+                    return false;
+            }
+            return true;
         }
 
         /*
@@ -286,7 +366,51 @@ class Entrega {
          * Podeu suposar que `dom` i `codom` estàn ordenats de menor a major.
          */
         static int exercici4(int[] dom, int[] codom, Function<Integer, Integer> f) {
-            return -1; // TO DO
+            int n = codom[codom.length - 1] + 1; // Asumiendo que 'codom' contiene números enteros no negativos
+
+            int[] image = new int[n];
+            boolean[] existsInCodom = new boolean[n];
+
+            for (int element : dom) {
+                int value = f.apply(element);
+                image[value]++;
+            }
+
+            for (int element : codom) {
+                existsInCodom[element] = true;
+            }
+
+            int maxImage = 0;
+            boolean isInjective = true;
+            boolean isSurjective = true;
+            int codomCount = 0;
+            int imageCount = 0;
+
+            for (int i = 0; i < n; i++) {
+                if (image[i] > maxImage) {
+                    maxImage = image[i];
+                }
+                if (image[i] > 1) {
+                    isInjective = false;
+                }
+                if (existsInCodom[i]) {
+                    if (image[i] == 0) {
+                        isSurjective = false;
+                    }
+                    codomCount++;
+                }
+                if (image[i] > 0) {
+                    imageCount++;
+                }
+            }
+
+            if (isSurjective) {
+                return maxImage;
+            } else if (isInjective) {
+                return imageCount - codomCount;
+            } else {
+                return 0;
+            }
         }
 
         /*
@@ -616,140 +740,139 @@ class Entrega {
     }
 
     static class Tema4 {
-    /*
-     * Donau la solució de l'equació
-     *
-     *   ax ≡ b (mod n),
-     *
-     * Els paràmetres `a` i `b` poden ser negatius (`b` pot ser zero), però podeu suposar que n > 1.
-     *
-     * Si la solució és x ≡ c (mod m), retornau `new int[] { c, m }`, amb 0 ⩽ c < m.
-     * Si no en té, retornau null.
-     */
-    static int[] exercici1(int a, int b, int n) {
-      return null; // TO DO
+        /*
+         * Donau la solució de l'equació
+         *
+         * ax ≡ b (mod n),
+         *
+         * Els paràmetres `a` i `b` poden ser negatius (`b` pot ser zero), però podeu
+         * suposar que n > 1.
+         *
+         * Si la solució és x ≡ c (mod m), retornau `new int[] { c, m }`, amb 0 ⩽ c < m.
+         * Si no en té, retornau null.
+         */
+        static int[] exercici1(int a, int b, int n) {
+            return null; // TO DO
+        }
+
+        /*
+         * Donau la solució (totes) del sistema d'equacions
+         *
+         * { x ≡ b[0] (mod n[0])
+         * { x ≡ b[1] (mod n[1])
+         * { x ≡ b[2] (mod n[2])
+         * { ...
+         *
+         * Cada b[i] pot ser negatiu o zero, però podeu suposar que n[i] > 1. També
+         * podeu suposar
+         * que els dos arrays tenen la mateixa longitud.
+         *
+         * Si la solució és de la forma x ≡ c (mod m), retornau `new int[] { c, m }`,
+         * amb 0 ⩽ c < m.
+         * Si no en té, retornau null.
+         */
+        static int[] exercici2a(int[] b, int[] n) {
+            return null; // TO DO
+        }
+
+        /*
+         * Donau la solució (totes) del sistema d'equacions
+         *
+         * { a[0]·x ≡ b[0] (mod n[0])
+         * { a[1]·x ≡ b[1] (mod n[1])
+         * { a[2]·x ≡ b[2] (mod n[2])
+         * { ...
+         *
+         * Cada a[i] o b[i] pot ser negatiu (b[i] pot ser zero), però podeu suposar que
+         * n[i] > 1. També
+         * podeu suposar que els tres arrays tenen la mateixa longitud.
+         *
+         * Si la solució és de la forma x ≡ c (mod m), retornau `new int[] { c, m }`,
+         * amb 0 ⩽ c < m.
+         * Si no en té, retornau null.
+         */
+        static int[] exercici2b(int[] a, int[] b, int[] n) {
+            return null; // TO DO
+        }
+
+        /*
+         * Suposau que n > 1. Donau-ne la seva descomposició en nombres primers,
+         * ordenada de menor a
+         * major, on cada primer apareix tantes vegades com el seu ordre. Per exemple,
+         *
+         * exercici4a(300) --> new int[] { 2, 2, 3, 5, 5 }
+         *
+         * No fa falta que cerqueu algorismes avançats de factorització, podeu utilitzar
+         * la força bruta
+         * (el que coneixeu com el mètode manual d'anar provant).
+         */
+        static ArrayList<Integer> exercici3a(int n) {
+            return new ArrayList<>(); // TO DO
+        }
+
+        /*
+         * Retornau el nombre d'elements invertibles a Z mòdul n³.
+         *
+         * Alerta: podeu suposar que el resultat hi cap a un int (32 bits a Java), però
+         * n³ no té perquè.
+         * De fet, no doneu per suposat que pogueu tractar res més gran que el resultat.
+         *
+         * No podeu utilitzar `long` per solucionar aquest problema. Necessitareu
+         * l'exercici 3a.
+         */
+        static int exercici3b(int n) {
+            return -1; // TO DO
+        }
+
+        /*
+         * Aquí teniu alguns exemples i proves relacionades amb aquests exercicis (vegeu
+         * `main`)
+         */
+        static void tests() {
+            assertThat(Arrays.equals(exercici1(17, 1, 30), new int[] { 23, 30 }));
+            assertThat(Arrays.equals(exercici1(-2, -4, 6), new int[] { 2, 3 }));
+            assertThat(exercici1(2, 3, 6) == null);
+
+            assertThat(
+                    exercici2a(
+                            new int[] { 1, 0 },
+                            new int[] { 2, 4 }) == null);
+
+            assertThat(
+                    Arrays.equals(
+                            exercici2a(
+                                    new int[] { 3, -1, 2 },
+                                    new int[] { 5, 8, 9 }),
+                            new int[] { 263, 360 }));
+
+            assertThat(
+                    exercici2b(
+                            new int[] { 1, 1 },
+                            new int[] { 1, 0 },
+                            new int[] { 2, 4 }) == null);
+
+            assertThat(
+                    Arrays.equals(
+                            exercici2b(
+                                    new int[] { 2, -1, 5 },
+                                    new int[] { 6, 1, 1 },
+                                    new int[] { 10, 8, 9 }),
+                            new int[] { 263, 360 }));
+
+            assertThat(exercici3a(10).equals(List.of(2, 5)));
+            assertThat(exercici3a(1291).equals(List.of(1291)));
+            assertThat(exercici3a(1292).equals(List.of(2, 2, 17, 19)));
+
+            assertThat(exercici3b(10) == 400);
+
+            // Aquí 1292³ ocupa més de 32 bits amb el signe, però es pot resoldre sense
+            // calcular n³.
+            assertThat(exercici3b(1292) == 961_496_064);
+
+            // Aquest exemple té el resultat fora de rang
+            // assertThat(exercici3b(1291) == 2_150_018_490);
+        }
     }
-
-    /*
-     * Donau la solució (totes) del sistema d'equacions
-     *
-     *  { x ≡ b[0] (mod n[0])
-     *  { x ≡ b[1] (mod n[1])
-     *  { x ≡ b[2] (mod n[2])
-     *  { ...
-     *
-     * Cada b[i] pot ser negatiu o zero, però podeu suposar que n[i] > 1. També podeu suposar
-     * que els dos arrays tenen la mateixa longitud.
-     *
-     * Si la solució és de la forma x ≡ c (mod m), retornau `new int[] { c, m }`, amb 0 ⩽ c < m.
-     * Si no en té, retornau null.
-     */
-    static int[] exercici2a(int[] b, int[] n) {
-      return null; // TO DO
-    }
-
-    /*
-     * Donau la solució (totes) del sistema d'equacions
-     *
-     *  { a[0]·x ≡ b[0] (mod n[0])
-     *  { a[1]·x ≡ b[1] (mod n[1])
-     *  { a[2]·x ≡ b[2] (mod n[2])
-     *  { ...
-     *
-     * Cada a[i] o b[i] pot ser negatiu (b[i] pot ser zero), però podeu suposar que n[i] > 1. També
-     * podeu suposar que els tres arrays tenen la mateixa longitud.
-     *
-     * Si la solució és de la forma x ≡ c (mod m), retornau `new int[] { c, m }`, amb 0 ⩽ c < m.
-     * Si no en té, retornau null.
-     */
-    static int[] exercici2b(int[] a, int[] b, int[] n) {
-      return null; // TO DO
-    }
-
-    /*
-     * Suposau que n > 1. Donau-ne la seva descomposició en nombres primers, ordenada de menor a
-     * major, on cada primer apareix tantes vegades com el seu ordre. Per exemple,
-     *
-     * exercici4a(300) --> new int[] { 2, 2, 3, 5, 5 }
-     *
-     * No fa falta que cerqueu algorismes avançats de factorització, podeu utilitzar la força bruta
-     * (el que coneixeu com el mètode manual d'anar provant).
-     */
-    static ArrayList<Integer> exercici3a(int n) {
-      return new ArrayList<>(); // TO DO
-    }
-
-    /*
-     * Retornau el nombre d'elements invertibles a Z mòdul n³.
-     *
-     * Alerta: podeu suposar que el resultat hi cap a un int (32 bits a Java), però n³ no té perquè.
-     * De fet, no doneu per suposat que pogueu tractar res més gran que el resultat.
-     *
-     * No podeu utilitzar `long` per solucionar aquest problema. Necessitareu l'exercici 3a.
-     */
-    static int exercici3b(int n) {
-      return -1; // TO DO
-    }
-
-    /*
-     * Aquí teniu alguns exemples i proves relacionades amb aquests exercicis (vegeu `main`)
-     */
-    static void tests() {
-      assertThat(Arrays.equals(exercici1(17, 1, 30), new int[] { 23, 30 }));
-      assertThat(Arrays.equals(exercici1(-2, -4, 6), new int[] { 2, 3 }));
-      assertThat(exercici1(2, 3, 6) == null);
-
-      assertThat(
-        exercici2a(
-          new int[] { 1, 0 },
-          new int[] { 2, 4 }
-        )
-        == null
-      );
-
-      assertThat(
-        Arrays.equals(
-          exercici2a(
-            new int[] { 3, -1, 2 },
-            new int[] { 5,  8, 9 }
-          ),
-          new int[] { 263, 360 }
-        )
-      );
-
-      assertThat(
-        exercici2b(
-          new int[] { 1, 1 },
-          new int[] { 1, 0 },
-          new int[] { 2, 4 }
-        )
-        == null
-      );
-
-      assertThat(
-        Arrays.equals(
-          exercici2b(
-            new int[] { 2,  -1, 5 },
-            new int[] { 6,   1, 1 },
-            new int[] { 10,  8, 9 }
-          ),
-          new int[] { 263, 360 }
-        )
-      );
-
-      assertThat(exercici3a(10).equals(List.of(2, 5)));
-      assertThat(exercici3a(1291).equals(List.of(1291)));
-      assertThat(exercici3a(1292).equals(List.of(2, 2, 17, 19 )));
-
-      assertThat(exercici3b(10) == 400);
-
-      // Aquí 1292³ ocupa més de 32 bits amb el signe, però es pot resoldre sense calcular n³.
-      assertThat(exercici3b(1292) == 961_496_064);
-
-      // Aquest exemple té el resultat fora de rang
-      //assertThat(exercici3b(1291) == 2_150_018_490);
-    }
-  }
 
     /*
      * Aquest mètode `main` conté alguns exemples de paràmetres i dels resultats que

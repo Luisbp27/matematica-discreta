@@ -7,6 +7,7 @@ import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
 
 /*
  * Aquesta entrega consisteix en implementar tots els mètodes annotats amb el comentari "// TO DO".
@@ -89,7 +90,7 @@ class Entrega {
          * És cert que ∃!x ∀y. P(y) -> Q(x,y) ?
          */
         static boolean exercici2(int[] universe, Predicate<Integer> p, BiPredicate<Integer, Integer> q) {
-            
+
             int countX = 0;
 
             for (int x : universe) {
@@ -107,34 +108,34 @@ class Entrega {
          * És cert que ∃x,y ∀z. P(x,z) ⊕ Q(y,z) ?
          */
         static boolean exercici3(int[] universe, BiPredicate<Integer, Integer> p, BiPredicate<Integer, Integer> q) {
-            
+
             for (int x : universe) {
                 for (int y : universe) {
                     boolean existsXYForAllZ = true;
-    
+
                     for (int z : universe) {
                         if (!(p.test(x, z) ^ q.test(y, z))) {
                             existsXYForAllZ = false;
                             break;
                         }
                     }
-    
+
                     if (existsXYForAllZ) {
                         return true;
                     }
                 }
             }
-    
+
             return false;
         }
 
         /*
          * És cert que (∀x. P(x)) -> (∀x. Q(x)) ?
-         * 
+         *
          * ∃x. ¬P(x) ∨ (∀x. Q(x))
          */
         static boolean exercici4(int[] universe, Predicate<Integer> p, Predicate<Integer> q) {
-            
+
             for (int x : universe) {
                 if (!p.test(x) || !q.test(x)) {
                     return true;
@@ -466,7 +467,7 @@ class Entrega {
 
         /*
          * Donat un arbre arrelat (dirigit, suposau que l'arrel es el vèrtex 0),
-         * trobau-ne el diàmetre.
+         * trobau-ne el diàmetre del graf subacent.
          * Suposau que totes les arestes tenen pes 1.
          */
         static int exercici4(int[][] g) {
@@ -614,6 +615,142 @@ class Entrega {
         }
     }
 
+    static class Tema4 {
+    /*
+     * Donau la solució de l'equació
+     *
+     *   ax ≡ b (mod n),
+     *
+     * Els paràmetres `a` i `b` poden ser negatius (`b` pot ser zero), però podeu suposar que n > 1.
+     *
+     * Si la solució és x ≡ c (mod m), retornau `new int[] { c, m }`, amb 0 ⩽ c < m.
+     * Si no en té, retornau null.
+     */
+    static int[] exercici1(int a, int b, int n) {
+      return null; // TO DO
+    }
+
+    /*
+     * Donau la solució (totes) del sistema d'equacions
+     *
+     *  { x ≡ b[0] (mod n[0])
+     *  { x ≡ b[1] (mod n[1])
+     *  { x ≡ b[2] (mod n[2])
+     *  { ...
+     *
+     * Cada b[i] pot ser negatiu o zero, però podeu suposar que n[i] > 1. També podeu suposar
+     * que els dos arrays tenen la mateixa longitud.
+     *
+     * Si la solució és de la forma x ≡ c (mod m), retornau `new int[] { c, m }`, amb 0 ⩽ c < m.
+     * Si no en té, retornau null.
+     */
+    static int[] exercici2a(int[] b, int[] n) {
+      return null; // TO DO
+    }
+
+    /*
+     * Donau la solució (totes) del sistema d'equacions
+     *
+     *  { a[0]·x ≡ b[0] (mod n[0])
+     *  { a[1]·x ≡ b[1] (mod n[1])
+     *  { a[2]·x ≡ b[2] (mod n[2])
+     *  { ...
+     *
+     * Cada a[i] o b[i] pot ser negatiu (b[i] pot ser zero), però podeu suposar que n[i] > 1. També
+     * podeu suposar que els tres arrays tenen la mateixa longitud.
+     *
+     * Si la solució és de la forma x ≡ c (mod m), retornau `new int[] { c, m }`, amb 0 ⩽ c < m.
+     * Si no en té, retornau null.
+     */
+    static int[] exercici2b(int[] a, int[] b, int[] n) {
+      return null; // TO DO
+    }
+
+    /*
+     * Suposau que n > 1. Donau-ne la seva descomposició en nombres primers, ordenada de menor a
+     * major, on cada primer apareix tantes vegades com el seu ordre. Per exemple,
+     *
+     * exercici4a(300) --> new int[] { 2, 2, 3, 5, 5 }
+     *
+     * No fa falta que cerqueu algorismes avançats de factorització, podeu utilitzar la força bruta
+     * (el que coneixeu com el mètode manual d'anar provant).
+     */
+    static ArrayList<Integer> exercici3a(int n) {
+      return new ArrayList<>(); // TO DO
+    }
+
+    /*
+     * Retornau el nombre d'elements invertibles a Z mòdul n³.
+     *
+     * Alerta: podeu suposar que el resultat hi cap a un int (32 bits a Java), però n³ no té perquè.
+     * De fet, no doneu per suposat que pogueu tractar res més gran que el resultat.
+     *
+     * No podeu utilitzar `long` per solucionar aquest problema. Necessitareu l'exercici 3a.
+     */
+    static int exercici3b(int n) {
+      return -1; // TO DO
+    }
+
+    /*
+     * Aquí teniu alguns exemples i proves relacionades amb aquests exercicis (vegeu `main`)
+     */
+    static void tests() {
+      assertThat(Arrays.equals(exercici1(17, 1, 30), new int[] { 23, 30 }));
+      assertThat(Arrays.equals(exercici1(-2, -4, 6), new int[] { 2, 3 }));
+      assertThat(exercici1(2, 3, 6) == null);
+
+      assertThat(
+        exercici2a(
+          new int[] { 1, 0 },
+          new int[] { 2, 4 }
+        )
+        == null
+      );
+
+      assertThat(
+        Arrays.equals(
+          exercici2a(
+            new int[] { 3, -1, 2 },
+            new int[] { 5,  8, 9 }
+          ),
+          new int[] { 263, 360 }
+        )
+      );
+
+      assertThat(
+        exercici2b(
+          new int[] { 1, 1 },
+          new int[] { 1, 0 },
+          new int[] { 2, 4 }
+        )
+        == null
+      );
+
+      assertThat(
+        Arrays.equals(
+          exercici2b(
+            new int[] { 2,  -1, 5 },
+            new int[] { 6,   1, 1 },
+            new int[] { 10,  8, 9 }
+          ),
+          new int[] { 263, 360 }
+        )
+      );
+
+      assertThat(exercici3a(10).equals(List.of(2, 5)));
+      assertThat(exercici3a(1291).equals(List.of(1291)));
+      assertThat(exercici3a(1292).equals(List.of(2, 2, 17, 19 )));
+
+      assertThat(exercici3b(10) == 400);
+
+      // Aquí 1292³ ocupa més de 32 bits amb el signe, però es pot resoldre sense calcular n³.
+      assertThat(exercici3b(1292) == 961_496_064);
+
+      // Aquest exemple té el resultat fora de rang
+      //assertThat(exercici3b(1291) == 2_150_018_490);
+    }
+  }
+
     /*
      * Aquest mètode `main` conté alguns exemples de paràmetres i dels resultats que
      * haurien de donar
@@ -625,9 +762,10 @@ class Entrega {
      * sigui `true`.
      */
     public static void main(String[] args) {
-        // Tema1.tests();
-        // Tema2.tests();
+        Tema1.tests();
+        Tema2.tests();
         Tema3.tests();
+        Tema4.tests();
     }
 
     /// Si b és cert, no fa res. Si b és fals, llança una excepció (AssertionError).

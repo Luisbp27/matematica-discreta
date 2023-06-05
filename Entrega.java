@@ -576,59 +576,31 @@ class Entrega {
          * sortida 0 del vèrtex i-èssim.
          */
         static int exercici3(int[][] g, int i) {
-            int descendents = 0;
+            boolean[] visited = new boolean[g.length];
+            return dfsCountLeafNodes(g, i, visited);
+        }
 
-            for (int adj : g[i]) {
-                if (g[adj].length == 0) {
-                    descendents++;
-                } else {
-                    descendents += exercici3(g, adj);
+        static int dfsCountLeafNodes(int[][] g, int vertex, boolean[] visited) {
+            visited[vertex] = true;
+            if (g[vertex].length == 0) {
+                return 1;
+            }
+            int count = 0;
+            for (int adj : g[vertex]) {
+                if (!visited[adj]) {
+                    count += dfsCountLeafNodes(g, adj, visited);
                 }
             }
-
-            return descendents;
+            return count;
         }
 
         /*
          * Donat un arbre arrelat (dirigit, suposau que l'arrel es el vèrtex 0),
-         * trobau-ne el diàmetre del graf subacent.
+         * trobau-ne el diàmetre del graf subjacent.
          * Suposau que totes les arestes tenen pes 1.
          */
         static int exercici4(int[][] g) {
-            int arrel = 0;
-            int diametre = 0;
-
-            for (int i = 0; i < g.length; i++) {
-                if (g[i].length > g[arrel].length) {
-                    arrel = i;
-                }
-            }
-
-            diametre = dfsDiameter(g, arrel, new HashSet<>());
-
-            return diametre;
-        }
-
-        static int dfsDiameter(int[][] g, int vertex, Set<Integer> visited) {
-            visited.add(vertex);
-
-            int maxDepth1 = 0;
-            int maxDepth2 = 0;
-
-            for (int adj : g[vertex]) {
-                if (!visited.contains(adj)) {
-                    int depth = dfsDiameter(g, adj, visited) + 1;
-
-                    if (depth > maxDepth1) {
-                        maxDepth2 = maxDepth1;
-                        maxDepth1 = depth;
-                    } else if (depth > maxDepth2) {
-                        maxDepth2 = depth;
-                    }
-                }
-            }
-
-            return maxDepth1 + maxDepth2;
+            return 0; // TODO
         }
 
         /*

@@ -274,6 +274,14 @@ class Entrega {
             return isReflexive(a, rel) && isSymmetric(rel) && isTransitive(rel);
         }
 
+        /**
+         * This method checks if the relation `rel` is reflexive regarding the set `a`.
+         *
+         * @param a
+         * @param rel
+         *
+         * @return
+         */
         static boolean isReflexive(int[] a, int[][] rel) {
             for (int value : a) {
                 boolean found = false;
@@ -286,9 +294,17 @@ class Entrega {
                 if (!found)
                     return false;
             }
+
             return true;
         }
 
+        /**
+         * This method checks if the relation `rel` is symmetric.
+         *
+         * @param rel
+         *
+         * @return
+         */
         static boolean isSymmetric(int[][] rel) {
             for (int[] pair : rel) {
                 boolean found = false;
@@ -301,9 +317,17 @@ class Entrega {
                 if (!found)
                     return false;
             }
+
             return true;
         }
 
+        /**
+         * This method checks if the relation `rel` is transitive.
+         *
+         * @param rel
+         *
+         * @return
+         */
         static boolean isTransitive(int[][] rel) {
             for (int[] pair : rel) {
                 for (int[] otherPair : rel) {
@@ -320,6 +344,7 @@ class Entrega {
                     }
                 }
             }
+
             return true;
         }
 
@@ -331,18 +356,21 @@ class Entrega {
          * Podeu soposar que `a` està ordenat de menor a major.
          */
         static int exercici2(int[] a, int[][] rel) {
-            if (!isReflexive(a, rel) || !isSymmetric(rel) || !isTransitive(rel))
-                return -1;
 
-            // Creamos un array para representar a qué clase de equivalencia pertenece cada
-            // elemento.
-            int n = a[a.length - 1] + 1; // Asumiendo que 'a' contiene números enteros no negativos
-            int[] parent = new int[n];
-            for (int i = 0; i < n; i++) {
-                parent[i] = i; // Inicialmente, cada elemento está en su propia clase de equivalencia
+            // Check if the relation is an equivalence relation
+            if (!isReflexive(a, rel) || !isSymmetric(rel) || !isTransitive(rel)) {
+                return -1;
             }
 
-            // Para cada par en la relación, unimos sus clases de equivalencia.
+            // Create an array to represent which equivalence class each element belongs to.
+            int n = a[a.length - 1] + 1;
+            int[] parent = new int[n];
+            for (int i = 0; i < n; i++) {
+                // Initially, each element is in its own equivalence class
+                parent[i] = i;
+            }
+
+            // For each pair in the relation, we join their equivalence classes.
             for (int[] pair : rel) {
                 int root1 = find(pair[0], parent);
                 int root2 = find(pair[1], parent);
@@ -351,7 +379,7 @@ class Entrega {
                 }
             }
 
-            // Contamos el número de clases de equivalencia únicas.
+            // Count the number of unique equivalence classes.
             Set<Integer> uniqueRoots = new HashSet<>();
             for (int element : a) {
                 uniqueRoots.add(find(element, parent));
@@ -360,6 +388,14 @@ class Entrega {
             return uniqueRoots.size();
         }
 
+        /**
+         * This method finds the root of the equivalence class of the given element.
+         *
+         * @param element
+         * @param parent
+         *
+         * @return
+         */
         static int find(int element, int[] parent) {
             if (parent[element] != element) {
                 parent[element] = find(parent[element], parent);
@@ -373,15 +409,21 @@ class Entrega {
          * Podeu soposar que `a` i `b` estan ordenats de menor a major.
          */
         static boolean exercici3(int[] a, int[] b, int[][] rel) {
+            // Check if the relation is a function
             for (int i = 0; i < a.length; i++) {
                 int count = 0;
+                // Count the number of times each element in 'a' appears in the relation
                 for (int j = 0; j < rel.length; j++) {
                     if (rel[j][0] == a[i])
                         count++;
                 }
-                if (count != 1)
+
+                // If an element in 'a' appears more than once, then the relation is not a function
+                if (count != 1) {
                     return false;
+                }
             }
+
             return true;
         }
 
@@ -396,16 +438,19 @@ class Entrega {
          * Podeu suposar que `dom` i `codom` estàn ordenats de menor a major.
          */
         static int exercici4(int[] dom, int[] codom, Function<Integer, Integer> f) {
-            int n = codom[codom.length - 1] + 1; // Asumiendo que 'codom' contiene números enteros no negativos
+            // Assume that 'codom' contains non-negative integers
+            int n = codom[codom.length - 1] + 1;
 
             int[] image = new int[n];
             boolean[] existsInCodom = new boolean[n];
 
+            // Count the number of times each element in 'dom' appears in the image of 'f'
             for (int element : dom) {
                 int value = f.apply(element);
                 image[value]++;
             }
 
+            // Check which elements in 'codom' appear in the image of 'f'
             for (int element : codom) {
                 existsInCodom[element] = true;
             }
@@ -416,6 +461,7 @@ class Entrega {
             int codomCount = 0;
             int imageCount = 0;
 
+            // Find the maximum cardinal of the antiimage of each element in 'codom'
             for (int i = 0; i < n; i++) {
                 if (image[i] > maxImage) {
                     maxImage = image[i];
@@ -434,6 +480,7 @@ class Entrega {
                 }
             }
 
+            // Return the appropriate value depending on the type of function
             if (isSurjective) {
                 return maxImage;
             } else if (isInjective) {

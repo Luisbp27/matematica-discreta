@@ -70,6 +70,7 @@ class Entrega {
             for (int x : universe) {
                 boolean found = false;
                 for (int y : universe) {
+                    // If P(x) is true and Q(x, y) is false, then the proposition is false
                     if (p.test(x) && q.test(x, y)) {
                         if (found) {
                             return false;
@@ -78,6 +79,8 @@ class Entrega {
                         }
                     }
                 }
+
+                // If P(x) is true and Q(x, y) is false for all y, then the proposition is false
                 if (!found && p.test(x)) {
                     return false;
                 }
@@ -90,15 +93,19 @@ class Entrega {
          * És cert que ∃!x ∀y. P(y) -> Q(x,y) ?
          */
         static boolean exercici2(int[] universe, Predicate<Integer> p, BiPredicate<Integer, Integer> q) {
+
             int count = 0;
             for (int x : universe) {
                 boolean valid = true;
                 for (int y : universe) {
+                    // If P(y) is true and Q(x, y) is false, then the proposition is false
                     if (p.test(y) && !q.test(x, y)) {
                         valid = false;
                         break;
                     }
                 }
+
+                // If P(y) is true and Q(x, y) is false for all y, then the proposition is false
                 if (valid) {
                     count++;
                     if (count > 1) {
@@ -106,6 +113,7 @@ class Entrega {
                     }
                 }
             }
+
             return count == 1;
         }
 
@@ -119,12 +127,14 @@ class Entrega {
                     boolean existsXYForAllZ = true;
 
                     for (int z : universe) {
+                        // If P(x, z) and Q(y, z) have the same value, then the proposition is false
                         if (!(p.test(x, z) ^ q.test(y, z))) {
                             existsXYForAllZ = false;
                             break;
                         }
                     }
 
+                    // If P(x, z) and Q(y, z) have the same value for all z, then the proposition is true
                     if (existsXYForAllZ) {
                         return true;
                     }
@@ -140,6 +150,8 @@ class Entrega {
          * ∃x. ¬P(x) ∨ (∀x. Q(x))
          */
         static boolean exercici4(int[] universe, Predicate<Integer> p, Predicate<Integer> q) {
+
+            // If there exists an x such that P(x) is false, then the proposition is true
             boolean existsXNotP = false;
             for (int x : universe) {
                 if (!p.test(x)) {
@@ -148,10 +160,12 @@ class Entrega {
                 }
             }
 
+            // If there exists an x such that Q(x) is false, then the proposition is false
             if (existsXNotP) {
                 return true;
             }
 
+            // If Q(x) is true for all x, then the proposition is true
             for (int x : universe) {
                 if (!q.test(x)) {
                     return false;

@@ -616,7 +616,7 @@ class Entrega {
          * Suposau que totes les arestes tenen pes 1.
          */
         static int exercici4(int[][] g) {
-            return 0; // TODO
+            return -1;
         }
 
         /*
@@ -845,7 +845,7 @@ class Entrega {
          * Si no en té, retornau null.
          */
         static int[] exercici2b(int[] a, int[] b, int[] n) {
-            return null; // TO DO
+            return null;
         }
 
         /*
@@ -870,6 +870,32 @@ class Entrega {
             return factors;
         }
 
+        static int lcm(int a, int b) {
+            return (a / gcd(a, b)) * b;
+        }
+
+        static int powerMod(int base, int exponent, int modulus) {
+            int result = 1;
+            base = base % modulus;
+            while (exponent > 0) {
+                if (exponent % 2 == 1) {
+                    result = (result * base) % modulus;
+                }
+                base = (base * base) % modulus;
+                exponent /= 2;
+            }
+            return result;
+        }
+
+        static int eulerTotient(int n) {
+            ArrayList<Integer> factors = exercici3a(n);
+            int result = n;
+            for (int factor : factors) {
+                result = result - result / factor;
+            }
+            return result;
+        }
+
         /*
          * Retornau el nombre d'elements invertibles a Z mòdul n³.
          *
@@ -877,11 +903,12 @@ class Entrega {
          * n³ no té perquè.
          * De fet, no doneu per suposat que pogueu tractar res més gran que el resultat.
          *
-         * No podeu utilitzar `long` per solucionar aquest problema. Necessitareu
+         * No podeu utilitzar ni `long` ni `double` per solucionar aquest problema.
+         * Necessitareu
          * l'exercici 3a.
          */
         static int exercici3b(int n) {
-            return 0; // TO DO
+            return -1;
         }
 
         /*
@@ -906,18 +933,18 @@ class Entrega {
                             new int[] { 263, 360 }));
 
             // assertThat(
-            //         exercici2b(
-            //                 new int[] { 1, 1 },
-            //                 new int[] { 1, 0 },
-            //                 new int[] { 2, 4 }) == null);
+            // exercici2b(
+            // new int[] { 1, 1 },
+            // new int[] { 1, 0 },
+            // new int[] { 2, 4 }) == null);
 
             // assertThat(
-            //         Arrays.equals(
-            //                 exercici2b(
-            //                         new int[] { 2, -1, 5 },
-            //                         new int[] { 6, 1, 1 },
-            //                         new int[] { 10, 8, 9 }),
-            //                 new int[] { 263, 360 }));
+            // Arrays.equals(
+            // exercici2b(
+            // new int[] { 2, -1, 5 },
+            // new int[] { 6, 1, 1 },
+            // new int[] { 10, 8, 9 }),
+            // new int[] { 263, 360 }));
 
             assertThat(exercici3a(10).equals(List.of(2, 5)));
             assertThat(exercici3a(1291).equals(List.of(1291)));
@@ -925,8 +952,8 @@ class Entrega {
 
             // assertThat(exercici3b(10) == 400);
 
-            // // Aquí 1292³ ocupa més de 32 bits amb el signe, però es pot resoldre sense
-            // // calcular n³.
+            // Aquí 1292³ ocupa més de 32 bits amb el signe, però es pot resoldre sense
+            // calcular n³.
             // assertThat(exercici3b(1292) == 961_496_064);
 
             // Aquest exemple té el resultat fora de rang

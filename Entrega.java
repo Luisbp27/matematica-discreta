@@ -66,7 +66,6 @@ class Entrega {
          * És cert que ∀x ∃!y. P(x) -> Q(x,y) ?
          */
         static boolean exercici1(int[] universe, Predicate<Integer> p, BiPredicate<Integer, Integer> q) {
-
             for (int x : universe) {
                 boolean found = false;
                 for (int y : universe) {
@@ -95,7 +94,6 @@ class Entrega {
          * És cert que ∃!x ∀y. P(y) -> Q(x,y) ?
          */
         static boolean exercici2(int[] universe, Predicate<Integer> p, BiPredicate<Integer, Integer> q) {
-
             int count = 0;
             for (int x : universe) {
                 boolean valid = true;
@@ -124,7 +122,6 @@ class Entrega {
          * És cert que ∃x,y ∀z. P(x,z) ⊕ Q(y,z) ?
          */
         static boolean exercici3(int[] universe, BiPredicate<Integer, Integer> p, BiPredicate<Integer, Integer> q) {
-
             for (int x : universe) {
                 for (int y : universe) {
                     boolean existsXYForAllZ = true;
@@ -154,7 +151,6 @@ class Entrega {
          * ∃x. ¬P(x) ∨ (∀x. Q(x))
          */
         static boolean exercici4(int[] universe, Predicate<Integer> p, Predicate<Integer> q) {
-
             boolean existsXNotP = false;
             for (int x : universe) {
                 // Si P(x) és fals, llavors la proposició és certa
@@ -370,7 +366,6 @@ class Entrega {
          * Podeu soposar que `a` està ordenat de menor a major.
          */
         static int exercici2(int[] a, int[][] rel) {
-
             // Comprovau si la relació és d'equivalència
             if (!isReflexive(a, rel) || !isSymmetric(rel) || !isTransitive(rel)) {
                 return -1;
@@ -623,6 +618,7 @@ class Entrega {
             int ordre = g.length;
             int mida = 0;
 
+            // Contam el nombre d'arestes
             for (int i = 0; i < ordre; i++) {
                 mida += g[i].length;
             }
@@ -650,6 +646,18 @@ class Entrega {
             return bipartit;
         }
 
+        /**
+         * Mètode auxiliar per comprovar si un graf és bipartit. És a dir, si es pot
+         * pintar amb dos colors de manera que dos vèrtexs adjacents no tenguin el
+         * mateix color.
+         *
+         * @param g         el graf
+         * @param vertex    el vèrtex actual
+         * @param color     l'array que representa els colors dels vèrtexs
+         * @param currColor el color actual
+         *
+         * @return true si el graf és bipartit, false altrament
+         */
         static boolean dfsBipartite(int[][] g, int vertex, int[] color, int currColor) {
             color[vertex] = currColor;
 
@@ -675,17 +683,32 @@ class Entrega {
             return dfsCountLeafNodes(g, i, visited);
         }
 
+        /**
+         * Mètode auxiliar per comptar el nombre de descendents amb grau de sortida 0
+         * d'un vèrtex.
+         *
+         * @param g       el graf
+         * @param vertex  el vèrtex actual
+         * @param visited l'array que representa els vèrtexs visitats
+         *
+         * @return el nombre de descendents amb grau de sortida 0 del vèrtex
+         */
         static int dfsCountLeafNodes(int[][] g, int vertex, boolean[] visited) {
             visited[vertex] = true;
+
+            // Si el vèrtex no té adjacents, llavors és una fulla
             if (g[vertex].length == 0) {
                 return 1;
             }
+
+            // Contam el nombre de descendents amb grau de sortida 0
             int count = 0;
             for (int adj : g[vertex]) {
                 if (!visited[adj]) {
                     count += dfsCountLeafNodes(g, adj, visited);
                 }
             }
+
             return count;
         }
 
@@ -819,45 +842,63 @@ class Entrega {
          * Si no en té, retornau null.
          */
         static int[] exercici1(int a, int b, int n) {
-            a = ((a % n) + n) % n; // Ensure a is positive
-            b = ((b % n) + n) % n; // Ensure b is positive
+            a = ((a % n) + n) % n; // Asseguram que a és positiu
+            b = ((b % n) + n) % n; // Asserguram que b és positiu
 
-            int gcd = gcd(a, n); // Compute the greatest common divisor of a and n
+            int mcd = mcd(a, n);
 
-            if (b % gcd != 0) {
-                return null; // If b is not divisible by gcd, there is no solution
+            // Si el mcd no divideix b, llavors no hi ha solució
+            if (b % mcd != 0) {
+                return null;
             }
 
-            // Find the modular multiplicative inverse of a/gcd mod n/gcd
-            int inv = modInverse(a / gcd, n / gcd);
+            // Trobem l'invers modular
+            int inv = modInverse(a / mcd, n / mcd);
 
+            // Si l'invers modular no existeix, llavors no hi ha solució
             if (inv == -1) {
-                return null; // If the modular multiplicative inverse does not exist, there is no solution
+                return null;
             }
 
-            // Multiply the inverse by b/gcd, and reduce modulo n/gcd
-            int x = (inv * (b / gcd)) % (n / gcd);
+            // Multiplicam l'invers modular per b/mcd per obtenir la solució
+            int x = (inv * (b / mcd)) % (n / mcd);
 
-            return new int[] { x, n / gcd };
+            return new int[] { x, n / mcd };
         }
 
-        // Function to compute the greatest common divisor of two numbers
-        static int gcd(int a, int b) {
+        /**
+         * Mètode auxiliar per calcular el màxim comú divisor de dos nombres.
+         *
+         * @param a el primer nombre
+         * @param b el segon nombre
+         *
+         * @return el màxim comú divisor de a i b
+         */
+        static int mcd(int a, int b) {
             if (b == 0) {
                 return a;
             } else {
-                return gcd(b, a % b);
+                return mcd(b, a % b);
             }
         }
 
-        // Function to compute the modular multiplicative inverse of a mod m
+        /**
+         * Mètode auxiliar per calcular l'invers modular d'un nombre.
+         *
+         * @param a el nombre
+         * @param m el mòdul
+         *
+         * @return l'invers modular de a mod m o -1 si no existeix
+         */
         static int modInverse(int a, int m) {
             a = a % m;
+
             for (int x = 1; x < m; x++) {
                 if ((a * x) % m == 1) {
                     return x;
                 }
             }
+
             return -1;
         }
 
@@ -880,30 +921,49 @@ class Entrega {
         static int[] exercici2a(int[] b, int[] n) {
             int len = b.length;
             long N = 1;
+
+            // Calculam el producte de tots els mòduls
             for (int ni : n) {
                 N *= ni;
             }
+
             long x = 0;
+            // Per cada congruència, calculam el producte de tots els mòduls excepte el
+            // mòdul actual
             for (int i = 0; i < len; i++) {
                 long Ni = N / n[i];
                 long inv = modInverse(Ni, n[i]);
+
+                // Si l'invers modular no existeix, llavors no hi ha solució
                 if (inv == -1) {
-                    return null; // If the modular multiplicative inverse does not exist, there is no solution
+                    return null;
                 }
+
+                // Solució
                 x += ((b[i] % n[i] + n[i]) % n[i]) * Ni * inv;
                 x %= N;
             }
+
             return new int[] { (int) x, (int) N };
         }
 
-        // Function to compute the modular multiplicative inverse of a mod m
+        /**
+         * Mètode auxiliar per calcular l'invers modular d'un nombre.
+         *
+         * @param a el nombre de tipus long
+         * @param m el mòdul de tipus long
+         *
+         * @return l'invers modular de a mod m o -1 si no existeix
+         */
         static long modInverse(long a, long m) {
             a = a % m;
+
             for (long x = 1; x < m; x++) {
                 if ((a * x) % m == 1) {
                     return x;
                 }
             }
+
             return -1;
         }
 
@@ -940,39 +1000,17 @@ class Entrega {
          */
         static ArrayList<Integer> exercici3a(int n) {
             ArrayList<Integer> factors = new ArrayList<>();
+
+            // Dividim n pel menor factor primer que trobem
             for (int i = 2; i <= n; i++) {
+                // Si i és un factor primer, llavors dividim n per i
                 while (n % i == 0) {
                     factors.add(i);
                     n /= i;
                 }
             }
+
             return factors;
-        }
-
-        static int lcm(int a, int b) {
-            return (a / gcd(a, b)) * b;
-        }
-
-        static int powerMod(int base, int exponent, int modulus) {
-            int result = 1;
-            base = base % modulus;
-            while (exponent > 0) {
-                if (exponent % 2 == 1) {
-                    result = (result * base) % modulus;
-                }
-                base = (base * base) % modulus;
-                exponent /= 2;
-            }
-            return result;
-        }
-
-        static int eulerTotient(int n) {
-            ArrayList<Integer> factors = exercici3a(n);
-            int result = n;
-            for (int factor : factors) {
-                result = result - result / factor;
-            }
-            return result;
         }
 
         /*

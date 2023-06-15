@@ -72,7 +72,7 @@ class Entrega {
                 for (int y : universe) {
                     // Si P(x) és cert i Q(x, y) és cert, llavors la proposició és falsa
                     if (p.test(x) && q.test(x, y)) {
-                        // Si ja hem trobat un y que compleixi la condició, llavors la proposició és falsa
+                        // Si ja hem trobat un y vàlida, llavors la proposició és falsa
                         if (found) {
                             return false;
                         } else {
@@ -81,7 +81,8 @@ class Entrega {
                     }
                 }
 
-                // Si P(x) és cert i no hem trobat cap y que compleixi la condició, llavors la proposició és falsa
+                // Si P(x) és cert i no hem trobat cap y que compleixi la condició, llavors la
+                // proposició és falsa
                 if (!found && p.test(x)) {
                     return false;
                 }
@@ -106,10 +107,10 @@ class Entrega {
                     }
                 }
 
-                // Si P(y) és cert i Q(x, y) és cert per tots els y, llavors la proposició és certa
+                // Si P(y) cert i Q(x, y) cert per tots els y, llavors la proposició és certa
                 if (valid) {
                     count++;
-                    // Si ja hem trobat més d'un x que compleixi la condició, llavors la proposició és falsa
+                    // Si ja hem trobat més d'un x vàlida, llavors la proposició és falsa
                     if (count > 1) {
                         return false;
                     }
@@ -128,14 +129,16 @@ class Entrega {
                 for (int y : universe) {
                     boolean existsXYForAllZ = true;
                     for (int z : universe) {
-                        // Si P(x, z) i Q(y, z) tenen el mateix valor per tots els z, llavors la proposició és falsa
+                        // Si P(x, z) i Q(y, z) tenen el mateix valor per tots els z, llavors la
+                        // proposició és falsa
                         if (!(p.test(x, z) ^ q.test(y, z))) {
                             existsXYForAllZ = false;
                             break;
                         }
                     }
 
-                    // Si P(x, z) i Q(y, z) tenen valors diferents per algun z, llavors la proposició és certa
+                    // Si P(x, z) i Q(y, z) tenen valors diferents per algun z, llavors la
+                    // proposició és certa
                     if (existsXYForAllZ) {
                         return true;
                     }
@@ -166,7 +169,8 @@ class Entrega {
                 return true;
             }
 
-            // Si P(x) és cert per tots els x i Q(x) és fals per algun x, llavors la proposició és falsa
+            // Si P(x) és cert per tots els x i Q(x) és fals per algun x, llavors la
+            // proposició és falsa
             for (int x : universe) {
                 if (!q.test(x)) {
                     return false;
@@ -276,12 +280,13 @@ class Entrega {
         }
 
         /**
-         * This method checks if the relation `rel` is reflexive regarding the set `a`.
+         * Aquest mètode comprova si la relació `rel` és reflexiva. És a dir,
+         * si tots els elements de `a` estan relacionats amb ells mateixos.
          *
-         * @param a
-         * @param rel
+         * @param a   l'array que representa el conjunt
+         * @param rel la relació
          *
-         * @return
+         * @return true si la relació és reflexiva, false altrament
          */
         static boolean isReflexive(int[] a, int[][] rel) {
             for (int value : a) {
@@ -292,19 +297,22 @@ class Entrega {
                         break;
                     }
                 }
-                if (!found)
+
+                if (!found) {
                     return false;
+                }
             }
 
             return true;
         }
 
         /**
-         * This method checks if the relation `rel` is symmetric.
+         * Aquest mètode comprova si la relació `rel` és simètrica. És a dir,
+         * si per cada parell (x, y) de `rel`, també hi ha el parell (y, x).
          *
-         * @param rel
+         * @param rel la relació
          *
-         * @return
+         * @return true si la relació és simètrica, false altrament
          */
         static boolean isSymmetric(int[][] rel) {
             for (int[] pair : rel) {
@@ -315,19 +323,22 @@ class Entrega {
                         break;
                     }
                 }
-                if (!found)
+
+                if (!found) {
                     return false;
+                }
             }
 
             return true;
         }
 
         /**
-         * This method checks if the relation `rel` is transitive.
+         * Aquest mètode comprova si la relació `rel` és transitiva. És a dir,
+         * si per cada parell (x, y) i (y, z) de `rel`, també hi ha el parell (x, z).
          *
-         * @param rel
+         * @param rel la relació
          *
-         * @return
+         * @return true si la relació és transitiva, false altrament
          */
         static boolean isTransitive(int[][] rel) {
             for (int[] pair : rel) {
@@ -340,8 +351,10 @@ class Entrega {
                                 break;
                             }
                         }
-                        if (!found)
+
+                        if (!found) {
                             return false;
+                        }
                     }
                 }
             }
@@ -358,20 +371,21 @@ class Entrega {
          */
         static int exercici2(int[] a, int[][] rel) {
 
-            // Check if the relation is an equivalence relation
+            // Comprovau si la relació és d'equivalència
             if (!isReflexive(a, rel) || !isSymmetric(rel) || !isTransitive(rel)) {
                 return -1;
             }
 
-            // Create an array to represent which equivalence class each element belongs to.
+            // Cream un array per representar a quina classe d'equivalència pertany cada
+            // element
             int n = a[a.length - 1] + 1;
             int[] parent = new int[n];
             for (int i = 0; i < n; i++) {
-                // Initially, each element is in its own equivalence class
+                // Inicialitzam cada element a la seva pròpia classe d'equivalència
                 parent[i] = i;
             }
 
-            // For each pair in the relation, we join their equivalence classes.
+            // Per cada parell (x, y) de la relació, unim les classes d'equivalència de x, y
             for (int[] pair : rel) {
                 int root1 = find(pair[0], parent);
                 int root2 = find(pair[1], parent);
@@ -380,7 +394,7 @@ class Entrega {
                 }
             }
 
-            // Count the number of unique equivalence classes.
+            // Contam el nombre de classes d'equivalència diferents
             Set<Integer> uniqueRoots = new HashSet<>();
             for (int element : a) {
                 uniqueRoots.add(find(element, parent));
@@ -390,17 +404,18 @@ class Entrega {
         }
 
         /**
-         * This method finds the root of the equivalence class of the given element.
+         * Aquest mètode retorna la classe d'equivalència de l'element `element`.
          *
-         * @param element
-         * @param parent
+         * @param element l'element
+         * @param parent  l'array que representa el conjunt
          *
-         * @return
+         * @return la classe d'equivalència de l'element
          */
         static int find(int element, int[] parent) {
             if (parent[element] != element) {
                 parent[element] = find(parent[element], parent);
             }
+
             return parent[element];
         }
 
@@ -410,16 +425,17 @@ class Entrega {
          * Podeu soposar que `a` i `b` estan ordenats de menor a major.
          */
         static boolean exercici3(int[] a, int[] b, int[][] rel) {
-            // Check if the relation is a function
+            // Comprovam que la relació no té elements repetits
             for (int i = 0; i < a.length; i++) {
                 int count = 0;
-                // Count the number of times each element in 'a' appears in the relation
+                // Contam el nombre de vegades que apareix l'element a[i] a la relació
                 for (int j = 0; j < rel.length; j++) {
-                    if (rel[j][0] == a[i])
+                    if (rel[j][0] == a[i]) {
                         count++;
+                    }
                 }
 
-                // If an element in 'a' appears more than once, then the relation is not a function
+                // Si un element apareix més d'una vegada, llavors la relació no és una funció
                 if (count != 1) {
                     return false;
                 }
@@ -439,19 +455,17 @@ class Entrega {
          * Podeu suposar que `dom` i `codom` estàn ordenats de menor a major.
          */
         static int exercici4(int[] dom, int[] codom, Function<Integer, Integer> f) {
-            // Assume that 'codom' contains non-negative integers
             int n = codom[codom.length - 1] + 1;
-
             int[] image = new int[n];
             boolean[] existsInCodom = new boolean[n];
 
-            // Count the number of times each element in 'dom' appears in the image of 'f'
+            // Contam el nombre d'elements de 'dom' que van a cada element de 'codom'
             for (int element : dom) {
                 int value = f.apply(element);
                 image[value]++;
             }
 
-            // Check which elements in 'codom' appear in the image of 'f'
+            // Comprovam quins elements de 'codom' són imatge d'algun element de 'dom'
             for (int element : codom) {
                 existsInCodom[element] = true;
             }
@@ -462,7 +476,8 @@ class Entrega {
             int codomCount = 0;
             int imageCount = 0;
 
-            // Find the maximum cardinal of the antiimage of each element in 'codom'
+            // Cercam el màxim cardinal de l'antiimatge de cada element de 'codom' i
+            // comprovam si la funció és injectiva i/o exhaustiva
             for (int i = 0; i < n; i++) {
                 if (image[i] > maxImage) {
                     maxImage = image[i];
@@ -481,7 +496,9 @@ class Entrega {
                 }
             }
 
-            // Return the appropriate value depending on the type of function
+            // Retornam el màxim cardinal de l'antiimatge de cada element de 'codom' si la
+            // funció és exhaustiva, el cardinal de l'imatge de 'f' menys el cardinal de
+            // 'codom' si la funció és injectiva, 0 altrament
             if (isSurjective) {
                 return maxImage;
             } else if (isInjective) {
